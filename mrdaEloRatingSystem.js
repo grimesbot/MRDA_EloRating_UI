@@ -178,7 +178,7 @@ class MrdaEloRatingSystem {
                 team.postseasonEligible = true;
         }
 
-        let sortedUnrankedTeams = unrankedTeams.sort((a, b) => b.averageRankingPoints - a.averageRankingPoints );
+        let sortedUnrankedTeams = unrankedTeams.sort((a, b) => b.eloRating - a.eloRating );
 
         for (let i = 0; i < sortedUnrankedTeams.length; i++) {
             let team = sortedUnrankedTeams[i];
