@@ -55,7 +55,7 @@
                         <tr>
                             <th rowspan="2" width="15%">Date</th>
                             <th rowspan="2">Score</th>
-                            <th colspan="2" class="text-center">Score</th>
+                            <th colspan="2" class="text-center">Normalized Score</th>
                             <th colspan="2" class="text-center border-left">Elo Rating</th>                            
                         </tr>
                         <tr>
@@ -84,7 +84,6 @@
                     <label>Sigmoid Steepness: </label><input id="sigmoid_steepness" type="number" min="0.002" max="0.04" step="0.001"><br />
                     <label>Include 2023 games: </label><input id="include_game_history" data-regenreateApiGames="true" type="checkbox"><br />
                     <label>Include not yet validated (status=3) games: </label><input id="include_status3_games" data-regenreateApiGames="true" type="checkbox"><br />
-                    <label>Sort games by date: </label><input id="sort_games_by_date" data-regenreateApiGames="true" type="checkbox"><br />                    
                     <br />
                     Average difference between expected & actual when both teams have >=5 previous games:<br />
                     <span id="diffAvg" style="font-weight: bold;"></span><br />

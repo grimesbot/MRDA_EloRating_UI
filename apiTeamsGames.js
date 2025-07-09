@@ -81,10 +81,8 @@ async function buildTeamsAndGames(callback) {
     let unvalidated3Games = config.include_status3_games ? await fetchGames(null, null, 3) : [];
 
     //combine the unvalidated and validated games and sort by date
-    let apiGames = [...(validatedGames || []), ...(unvalidated3Games || []), ...(unvalidatedGames || [])];
-    
-    if (config.sort_games_by_date)
-        apiGames = apiGames.sort((a, b) => new Date(a.event.game_datetime) - new Date(b.event.game_datetime));
+    let apiGames = [...(validatedGames || []), ...(unvalidated3Games || []), ...(unvalidatedGames || [])]
+                        .sort((a, b) => new Date(a.event.game_datetime) - new Date(b.event.game_datetime));
 
     //build apiTeams from API response
     apiGames.forEach(game => {
