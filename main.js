@@ -36,7 +36,7 @@ function populateRankingDates() {
 
     let todayString = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
     $dropdown.append($("<option />").val(todayString).text("Today (" + todayString + ")"));
-    $dropdown.val(todayString);
+    $dropdown.val(selectedWednesday);
 }
 
 function displayRankingChart(teamsArray, calcDate) {
