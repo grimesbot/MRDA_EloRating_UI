@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme>
+<head>
+    <meta charset="UTF-8">
+    <title>MRDA Game Points UI</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center">MRDA Rankings by Elo Rating</h1>
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="date" class="col-form-label">Date:</label>
+            </div>
+            <div class="col-auto">
+                <select name="date" id="date" style="display: block; margin: 0 auto;"></select>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#configModal">
+                    Configuraton
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#gamesModal">
+                    Games
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teamsModal">
+                    Teams
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id ="ratingsChartContainer" class="container-xxl" >
+        <canvas id="ratingsChart"></canvas>
+    </div>
+    
+    <div id ="mrdaEloRatingsContainer" class="container-xxl" >
+        <table id="mrdaEloRatings" class="display" width="100%"></table>
+    </div>
+
+    <div id="teamDetailModal" class="modal fade" tabindex="-1" aria-labelledby="teamDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-fullscreen-xl-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="teamDetailModalLabel"><span id="teamName"></span></h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5 class="text-center">Current Elo Rating: <span style="font-weight: bold;" id="teamEloRating"></span></h5>
+                    <canvas id="teamChart"></canvas>
+                    <table id="teamGameHistory" class="display" width="100%">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" width="15%">Date</th>
+                            <th rowspan="2">Score</th>
+                            <th colspan="2" class="text-center">Score</th>
+                            <th colspan="2" class="text-center border-left">Elo Rating</th>                            
+                        </tr>
+                        <tr>
+                            <th width="10%">Expected</th>
+                            <th width="10%">Actual</th>
+                            <th width="5%" class="border-left">Change</th>
+                            <th width="5%">Rating</th>
+                        </tr>
+                    </thead>
+                    </table>    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="configModal" tabindex="-1" aria-labelledby="configModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="configModalLabel">Configuraton</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="config" class="modal-body">
+                    <label>K Factor: </label><input id="k_factor" type="number" min="1" max="256"><br />
+                    <label>Sigmoid Steepness: </label><input id="sigmoid_steepness" type="number" min="0.002" max="0.04" step="0.001"><br />
+                    <label>Include 2023 games: </label><input id="include_game_history" data-regenreateApiGames="true" type="checkbox"><br />
+                    <label>Include not yet validated (status=3) games: </label><input id="include_status3_games" data-regenreateApiGames="true" type="checkbox"><br />
+                    <label>Sort games by date: </label><input id="sort_games_by_date" data-regenreateApiGames="true" type="checkbox"><br />                    
+                    <br />
+                    Average difference between expected & actual when both teams have >=5 previous games:<br />
+                    <span id="diffAvg" style="font-weight: bold;"></span><br />
+<!--                    <label>Ratio Cap (0 to disable): </label><input id="ratio_cap" type="number" min="0" max="100"><span id="ratioCapGames" class="small"></span><br />
+                    <label>Log Ratio Steepness (0 to disable log ratio): </label><input id="log_ratio_steepness" type="number" step='0.1' min="0" max="10"><br />
+                    <label>Game Points Multiplier Cap (0 to disable): </label><input id="gpx_cap" type="number" min="0" max="100"><span id="gpxGames" class="small"></span><br />
+                    <label>Exclude 6-9+ month old postseason games in final calculation: </label><input id="exclude_playoffs_in_final_calc" type="checkbox"><br />
+                    <label>Exclude Game Points when both expected & actual ratios over cap: </label><input id="exclude_gp_over_cap" type="checkbox"><span id="bothRatioCapGames" class="small"></span><br />
+                    <label>Calculate averages every Wednesday: </label><input id="calc_every_wed" type="checkbox"><br />
+                    <br />
+                    Average difference between expected & actual raw ratios when both teams have >=5 previous games:<br />
+                    <span id="diffAvg" style="font-weight: bold;"></span><br />
+                    Excluding games with actual score raw ratio beyond cap<br />
+                    <span id="diffUnderCapAvg" style="font-weight: bold;"></span>
+-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="gamesModal" tabindex="-1" aria-labelledby="gamesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="gamesModalLabel">MRDA Games</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="games" class="modal-body">
+                    <table id="apiGames" class="display" width="100%"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="teamsModal" tabindex="-1" aria-labelledby="teamsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="teamsModalLabel">MRDA Teams</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="teams" class="modal-body">
+                    <table id="apiTeams" class="display" width="100%"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <script src="config.js"></script>    
+    <script src="teamInfo.js"></script>
+    <script src="gameHistory.js"></script>
+    <script src="apiTeamsGames.js"></script>    
+    <script src="mrdaEloRatingSystem.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
