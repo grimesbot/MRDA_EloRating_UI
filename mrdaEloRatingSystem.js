@@ -59,7 +59,6 @@ class MrdaEloRatingSystem {
     constructor(apiTeams) {
         this.mrdaTeams = {};
         Object.keys(apiTeams).forEach(teamId => this.mrdaTeams[teamId] = new MrdaTeam(apiTeams[teamId]));
-        this.expectedVsActualDiffs = [];
         this.absoluteLogErrors = [];
     }
 
@@ -87,11 +86,6 @@ class MrdaEloRatingSystem {
 
             mrdaGame.eloAdjustments[mrdaGame.homeTeamId] = config.k_factor * (mrdaGame.actual[mrdaGame.homeTeamId] - mrdaGame.expected[mrdaGame.homeTeamId]);
             mrdaGame.eloAdjustments[mrdaGame.awayTeamId] = config.k_factor * (mrdaGame.actual[mrdaGame.awayTeamId] - mrdaGame.expected[mrdaGame.awayTeamId]);
-
-            if (this.mrdaTeams[mrdaGame.homeTeamId].gameHistory.length >= 5 && this.mrdaTeams[mrdaGame.awayTeamId].gameHistory.length >= 5) {
-                let diff = Math.abs(mrdaGame.expected[mrdaGame.homeTeamId] - mrdaGame.actual[mrdaGame.homeTeamId]);
-                this.expectedVsActualDiffs.push(diff);
-            }
             
             if (new Date(mrdaGame.date).getFullYear() == 2025) {
                 this.absoluteLogErrors.push(Math.abs(Math.log((mrdaGame.expected[mrdaGame.homeTeamId]/mrdaGame.expected[mrdaGame.awayTeamId])/(mrdaGame.scores[mrdaGame.homeTeamId]/mrdaGame.scores[mrdaGame.awayTeamId]))));

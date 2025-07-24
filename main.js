@@ -112,11 +112,9 @@ function calculateAndDisplayRankings() {
 
     mrdaEloRatingSystem.rankTeams();
 
-    $("#diffAvg").text(averageFromArray(mrdaEloRatingSystem.expectedVsActualDiffs).toFixed(4));
-
     let meal = averageFromArray(mrdaEloRatingSystem.absoluteLogErrors);
     let errorPct = (Math.exp(meal) - 1) * 100;
-    $('#pctErrorMeal').text(errorPct.toFixed(2));
+    $('#pctErrorMeal').text(errorPct.toFixed(2) + '%');
 
     displayRankingChart(Object.values(mrdaEloRatingSystem.mrdaTeams), $("#date").val());
 
