@@ -60,6 +60,7 @@ class MrdaEloRatingSystem {
         this.mrdaTeams = {};
         Object.keys(apiTeams).forEach(teamId => this.mrdaTeams[teamId] = new MrdaTeam(apiTeams[teamId]));
         this.expectedVsActualDiffs = [];
+        this.absoluteLogErrors = [];
     }
 
     expectedScore(ra, rb) {
@@ -90,6 +91,10 @@ class MrdaEloRatingSystem {
             if (this.mrdaTeams[mrdaGame.homeTeamId].gameHistory.length >= 5 && this.mrdaTeams[mrdaGame.awayTeamId].gameHistory.length >= 5) {
                 let diff = Math.abs(mrdaGame.expected[mrdaGame.homeTeamId] - mrdaGame.actual[mrdaGame.homeTeamId]);
                 this.expectedVsActualDiffs.push(diff);
+            }
+            
+            if (new Date(mrdaGame.date).getFullYear() == 2025) {
+                this.absoluteLogErrors.push(Math.abs(Math.log((mrdaGame.expected[mrdaGame.homeTeamId]/mrdaGame.expected[mrdaGame.awayTeamId])/(mrdaGame.scores[mrdaGame.homeTeamId]/mrdaGame.scores[mrdaGame.awayTeamId]))));
             }
         }
         
