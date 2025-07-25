@@ -54,12 +54,19 @@ function daysDiff(startDate, endDate) {
     return Math.round(diffInMilliseconds / dayInMilliseconds);;
 }
 
+const q4_2024_deadline = new Date (2024, 12 - 1, 4);
+const q1_2025_deadline = new Date (2025, 3 - 1, 5);
+const q2_2025_deadline = new Date (2025, 6 - 1, 4);
+const q3_2025_deadline = new Date (2025, 9 - 1, 3);
 
 class MrdaEloRatingSystem {
     constructor(apiTeams) {
         this.mrdaTeams = {};
         Object.keys(apiTeams).forEach(teamId => this.mrdaTeams[teamId] = new MrdaTeam(apiTeams[teamId]));
         this.absoluteLogErrors = [];
+        this.absoluteLogErrors_2025_Q1 = [];
+        this.absoluteLogErrors_2025_Q2 = [];        
+        this.absoluteLogErrors_2025_Q3 = [];                        
     }
 
     expectedScore(ra, rb) {
@@ -87,8 +94,17 @@ class MrdaEloRatingSystem {
             mrdaGame.eloAdjustments[mrdaGame.homeTeamId] = config.k_factor * (mrdaGame.actual[mrdaGame.homeTeamId] - mrdaGame.expected[mrdaGame.homeTeamId]);
             mrdaGame.eloAdjustments[mrdaGame.awayTeamId] = config.k_factor * (mrdaGame.actual[mrdaGame.awayTeamId] - mrdaGame.expected[mrdaGame.awayTeamId]);
             
-            if (new Date(mrdaGame.date).getFullYear() == 2025) {
-                this.absoluteLogErrors.push(Math.abs(Math.log((mrdaGame.expected[mrdaGame.homeTeamId]/mrdaGame.expected[mrdaGame.awayTeamId])/(mrdaGame.scores[mrdaGame.homeTeamId]/mrdaGame.scores[mrdaGame.awayTeamId]))));
+            let gameDate = new Date(mrdaGame.date);
+
+            if (gameDate > q4_2024_deadline) {
+                let absLogError = Math.abs(Math.log((mrdaGame.expected[mrdaGame.homeTeamId]/mrdaGame.expected[mrdaGame.awayTeamId])/(mrdaGame.scores[mrdaGame.homeTeamId]/mrdaGame.scores[mrdaGame.awayTeamId])));
+                this.absoluteLogErrors.push(absLogError);
+                if (q4_2024_deadline < gameDate && gameDate < q1_2025_deadline)
+                    this.absoluteLogErrors_2025_Q1.push(absLogError);
+                if (q1_2025_deadline < gameDate && gameDate < q2_2025_deadline)
+                    this.absoluteLogErrors_2025_Q2.push(absLogError);
+                if (q2_2025_deadline < gameDate && gameDate < q3_2025_deadline)
+                    this.absoluteLogErrors_2025_Q3.push(absLogError);
             }
         }
         

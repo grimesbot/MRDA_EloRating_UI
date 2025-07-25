@@ -102,6 +102,12 @@ function averageFromArray(array) {
     return total / array.length;
 }
 
+function meanAbsoluteLogErrorPercent(absLogErrorArray) {
+    let meal = averageFromArray(absLogErrorArray);
+    let errorPct = (Math.exp(meal) - 1) * 100;
+    return errorPct.toFixed(2) + '%';
+}
+
 function calculateAndDisplayRankings() {
 
     let mrdaEloRatingSystem = new MrdaEloRatingSystem(apiTeams);
@@ -112,9 +118,18 @@ function calculateAndDisplayRankings() {
 
     mrdaEloRatingSystem.rankTeams();
 
-    let meal = averageFromArray(mrdaEloRatingSystem.absoluteLogErrors);
-    let errorPct = (Math.exp(meal) - 1) * 100;
-    $('#pctErrorMeal').text(errorPct.toFixed(2) + '%');
+    if (mrdaEloRatingSystem.absoluteLogErrors.length > 0)
+    {
+        let $pctErrorDiv = $('#pctErrorMeal');
+        $pctErrorDiv.html("Percent Error using Mean Absolute Log Error: <br />");
+        if (mrdaEloRatingSystem.absoluteLogErrors_2025_Q1.length > 0)
+            $pctErrorDiv.append("2025 Q1: " + meanAbsoluteLogErrorPercent(mrdaEloRatingSystem.absoluteLogErrors_2025_Q1) + "<br />");
+        if (mrdaEloRatingSystem.absoluteLogErrors_2025_Q2.length > 0)
+            $pctErrorDiv.append("2025 Q2: " + meanAbsoluteLogErrorPercent(mrdaEloRatingSystem.absoluteLogErrors_2025_Q2) + "<br />");
+        if (mrdaEloRatingSystem.absoluteLogErrors_2025_Q3.length > 0)
+            $pctErrorDiv.append("2025 Q3: " + meanAbsoluteLogErrorPercent(mrdaEloRatingSystem.absoluteLogErrors_2025_Q3) + "<br />");
+        $pctErrorDiv.append("Total: " + meanAbsoluteLogErrorPercent(mrdaEloRatingSystem.absoluteLogErrors));
+    }
 
     displayRankingChart(Object.values(mrdaEloRatingSystem.mrdaTeams), $("#date").val());
 
