@@ -155,12 +155,14 @@ class MrdaEloRatingSystem {
                     return;
                 if (game.championship && ageDays >= 183) {
                     //championships do not count for active status past 6 months
+                    return;
                 } else if (game.qualifier && ageDays >= 271) {
                     //qualifiers do not count for active status past 9 months
+                    return;
                 } else if (game.forfeit 
-                    && ((game.scores[game.homeTeamId] > 0 && game.homeTeamId == team.teamId) 
-                    || (game.scores[game.awayTeamId] > 0 && game.awayTeamId == team.teamId))) {
-                    team.activeStatusGameCount ++;
+                    && ((game.homeTeamId == team.teamId && game.scores[game.homeTeamId] == 0) 
+                    || (game.awayTeamId == team.teamId && game.scores[game.awayTeamId] == 0 ))) {
+                    return;
                 } else {
                     team.activeStatusGameCount ++;
                 }
